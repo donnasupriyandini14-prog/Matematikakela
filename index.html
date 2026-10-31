@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayo Belajar Membandingkan Panjang & Berat Benda</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Fredoka for kids friendly UI -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti for rewards -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandYellow: '#FFD166',
+                        brandGreen: '#06D6A0',
+                        brandBlue: '#118AB2',
+                        brandRed: '#EF476F',
+                        brandOrange: '#FF9F1C',
+                        brandPurple: '#8338EC'
+                    },
+                    fontFamily: {
+                        sans: ['Fredoka', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Fredoka', cursive, sans-serif;
+            background-color: #F4F9FF;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn-bounce {
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .btn-bounce:active {
+            transform: scale(0.94);
+        }
+        .card-shadow {
+            box-shadow: 0 8px 0 rgba(0,0,0,0.1);
+        }
+        .card-shadow-sm {
+            box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+        }
+        /* Custom Pulse animation */
+        @keyframes customPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-custom-pulse {
+            animation: customPulse 2s infinite ease-in-out;
+        }
+        /* Seesaw Animation */
+        .seesaw-tilt-left { transform: rotate(-12deg); transform-origin: center center; transition: transform 0.5s ease; }
+        .seesaw-tilt-right { transform: rotate(12deg); transform-origin: center center; transition: transform 0.5s ease; }
+        .seesaw-balanced { transform: rotate(0deg); transform-origin: center center; transition: transform 0.5s ease; }
+    </style>
+</head>
+<body class="bg-sky-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-amber-400 border-b-4 border-amber-500 sticky top-0 z-50 px-4 py-3 shadow-md">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-3xl">📏</span>
+                <span class="text-xl md:text-2xl font-bold text-amber-950 tracking-wide drop-shadow-sm">Ayo Belajar!</span>
+            </div>
+            <div id="student-tag" class="hidden bg-white/90 px-4 py-1.5 rounded-full border-2 border-amber-600 font-bold text-amber-900 text-sm md:text-base flex items-center shadow-sm">
+                <i class="fa-solid fa-user-astronaut mr-2 text-indigo-600"></i>
+                <span id="display-student-name">Siswa</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-4xl mx-auto w-full p-4 flex-grow flex flex-col justify-center">
+
+        <!-- SECTION 1: HALAMAN PEMBUKA -->
+        <section id="sec-welcome" class="space-y-6 text-center py-4">
+            <div class="bg-white rounded-3xl p-6 md:p-8 card-shadow border-4 border-sky-300">
+                <div class="w-32 h-32 md:w-40 md:h-40 mx-auto mb-4 bg-sky-100 rounded-full flex items-center justify-center border-4 border-sky-400 text-6xl animate-custom-pulse">
+                    ✏️⚖️
+                </div>
+                <h1 class="text-2xl md:text-4xl font-extrabold text-indigo-900 mb-2 leading-tight">
+                    AYO BELAJAR MEMBANDINGKAN<br>
+                    <span class="text-amber-500">PANJANG</span> DAN <span class="text-emerald-500">BERAT</span> BENDA
+                </h1>
+                <p class="text-slate-600 text-base md:text-lg mb-6">Matematika Seru untuk Kelas 1 SD</p>
+                
+                <div class="max-w-sm mx-auto bg-amber-50 p-4 rounded-2xl border-2 border-amber-300 mb-6">
+                    <label for="input-nama" class="block text-amber-900 font-bold mb-2 text-lg">Siapa Namamu, Teman Pintar?</label>
+                    <input type="text" id="input-nama" placeholder="Tulis namamu di sini..." class="w-full px-4 py-3 rounded-xl border-2 border-amber-400 text-center font-bold text-slate-800 text-lg focus:outline-none focus:ring-4 focus:ring-amber-300 bg-white shadow-inner">
+                </div>
+
+                <button onclick="startLearning()" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xl md:text-2xl py-4 px-8 rounded-full card-shadow border-b-4 border-emerald-700 w-full sm:w-auto inline-flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-play"></i> MULAI BELAJAR
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION 2: MENU UTAMA -->
+        <section id="sec-menu" class="hidden space-y-6">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-extrabold text-indigo-900">PILIH MENU BELAJAR</h2>
+                <p class="text-slate-600 text-lg">Mau belajar apa kita hari ini?</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button onclick="showSection('sec-materi-panjang')" class="btn-bounce bg-sky-400 hover:bg-sky-500 text-white p-6 rounded-3xl card-shadow border-4 border-sky-600 text-left flex items-center space-x-4">
+                    <div class="text-5xl bg-white p-3 rounded-2xl text-sky-600 shadow-inner">📏</div>
+                    <div>
+                        <div class="text-2xl font-extrabold">1. Belajar Panjang</div>
+                        <div class="text-sky-100 text-sm">Panjang, Pendek, Sama Panjang</div>
+                    </div>
+                </button>
+
+                <button onclick="showSection('sec-materi-berat')" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white p-6 rounded-3xl card-shadow border-4 border-emerald-700 text-left flex items-center space-x-4">
+                    <div class="text-5xl bg-white p-3 rounded-2xl text-emerald-600 shadow-inner">⚖️</div>
+                    <div>
+                        <div class="text-2xl font-extrabold">2. Belajar Berat</div>
+                        <div class="text-emerald-100 text-sm">Berat, Ringan, Sama Berat</div>
+                    </div>
+                </button>
+
+                <button onclick="showSection('sec-games')" class="btn-bounce bg-purple-500 hover:bg-purple-600 text-white p-6 rounded-3xl card-shadow border-4 border-purple-700 text-left flex items-center space-x-4">
+                    <div class="text-5xl bg-white p-3 rounded-2xl text-purple-600 shadow-inner">🎮</div>
+                    <div>
+                        <div class="text-2xl font-extrabold">3. Permainan Seru</div>
+                        <div class="text-purple-100 text-sm">Tebak Gambar & Tantangan</div>
+                    </div>
+                </button>
+
+                <button onclick="showSection('sec-praktik')" class="btn-bounce bg-amber-400 hover:bg-amber-500 text-amber-950 p-6 rounded-3xl card-shadow border-4 border-amber-600 text-left flex items-center space-x-4">
+                    <div class="text-5xl bg-white p-3 rounded-2xl text-amber-600 shadow-inner">🔍</div>
+                    <div>
+                        <div class="text-2xl font-extrabold">4. Praktik Langsung</div>
+                        <div class="text-amber-900 text-sm">Cari benda di sekitar kelas!</div>
+                    </div>
+                </button>
+
+                <button onclick="startEvaluasi()" class="btn-bounce bg-rose-500 hover:bg-rose-600 text-white p-6 rounded-3xl card-shadow border-4 border-rose-700 text-left flex items-center space-x-4 sm:col-span-2">
+                    <div class="text-5xl bg-white p-3 rounded-2xl text-rose-600 shadow-inner">📝</div>
+                    <div>
+                        <div class="text-2xl font-extrabold">5. Ujian / Evaluasi</div>
+                        <div class="text-rose-100 text-sm">Uji kemampuanmu dengan 10 soal bergambar!</div>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION 3A: MATERI PANJANG -->
+        <section id="sec-materi-panjang" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 border-4 border-sky-400 card-shadow space-y-6">
+                <div class="flex justify-between items-center border-b-2 border-slate-100 pb-4">
+                    <h2 class="text-2xl font-extrabold text-sky-800 flex items-center gap-2">
+                        <span>📏</span> Membandingkan Panjang Benda
+                    </h2>
+                    <button onclick="speakText('Materi Membandingkan Panjang Benda. Kita bisa membandingkan panjang dua benda dengan cara meletakkannya sejajar pada alas yang sama.')" class="btn-bounce bg-sky-100 hover:bg-sky-200 text-sky-700 p-3 rounded-full text-xl border-2 border-sky-300">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+
+                <p class="text-slate-700 text-lg">
+                    Untuk membandingkan panjang, letakkan benda <b>sejajar pada posisi awal yang sama</b>!
+                </p>
+
+                <!-- Visual Perbandingan Panjang -->
+                <div class="bg-sky-50 rounded-2xl p-6 border-2 border-sky-200 space-y-4">
+                    <div class="text-slate-600 font-bold mb-2">Garis Awal Sama:</div>
+                    <div class="border-l-4 border-red-500 pl-4 space-y-4">
+                        <!-- Pensil Panjang -->
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <div class="bg-amber-400 text-white px-3 py-2 rounded-xl w-3/4 font-bold flex justify-between items-center shadow">
+                                    <span>Pensil A</span>
+                                    <span>✏️✏️✏️</span>
+                                </div>
+                                <span class="font-bold text-sky-800">Lebih Panjang</span>
+                            </div>
+                        </div>
+                        <!-- Pensil Pendek -->
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <div class="bg-emerald-400 text-white px-3 py-2 rounded-xl w-2/4 font-bold flex justify-between items-center shadow">
+                                    <span>Pensil B</span>
+                                    <span>✏️</span>
+                                </div>
+                                <span class="font-bold text-emerald-800">Lebih Pendek</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kesimpulan Kata Kunci -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="bg-amber-100 p-4 rounded-2xl border-2 border-amber-300 text-center">
+                        <div class="text-xl font-bold text-amber-900">Lebih Panjang</div>
+                        <div class="text-sm text-amber-800">Ukuran lebih panjang dibanding benda lain</div>
+                    </div>
+                    <div class="bg-emerald-100 p-4 rounded-2xl border-2 border-emerald-300 text-center">
+                        <div class="text-xl font-bold text-emerald-900">Lebih Pendek</div>
+                        <div class="text-sm text-emerald-800">Ukuran lebih kecil dibanding benda lain</div>
+                    </div>
+                    <div class="bg-purple-100 p-4 rounded-2xl border-2 border-purple-300 text-center">
+                        <div class="text-xl font-bold text-purple-900">Sama Panjang</div>
+                        <div class="text-sm text-purple-800">Ukuran panjang kedua benda persis sama</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-4">
+                    <button onclick="showSection('sec-menu')" class="btn-bounce bg-slate-200 text-slate-700 px-6 py-3 rounded-full font-bold">
+                        ⬅️ Kembali ke Menu
+                    </button>
+                    <button onclick="showSection('sec-materi-berat')" class="btn-bounce bg-emerald-500 text-white px-6 py-3 rounded-full font-bold">
+                        Materi Berat ➡️
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3B: MATERI BERAT -->
+        <section id="sec-materi-berat" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 border-4 border-emerald-400 card-shadow space-y-6">
+                <div class="flex justify-between items-center border-b-2 border-slate-100 pb-4">
+                    <h2 class="text-2xl font-extrabold text-emerald-800 flex items-center gap-2">
+                        <span>⚖️</span> Membandingkan Berat Benda
+                    </h2>
+                    <button onclick="speakText('Materi Membandingkan Berat Benda. Kita bisa membandingkan berat benda langsung dengan menggunakan kedua tangan atau timbangan sederhana.')" class="btn-bounce bg-emerald-100 hover:bg-emerald-200 text-emerald-700 p-3 rounded-full text-xl border-2 border-emerald-300">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+
+                <p class="text-slate-700 text-lg">
+                    Kita dapat membandingkan berat benda langsung menggunakan <b>kedua tangan</b> atau <b>timbangan sederhana</b>!
+                </p>
+
+                <!-- Ilustrasi Timbangan -->
+                <div class="bg-emerald-50 rounded-2xl p-6 border-2 border-emerald-200 text-center space-y-4">
+                    <div class="text-lg font-bold text-emerald-900">Lihat Posisi Timbangan Sederhana:</div>
+                    
+                    <div class="flex justify-around items-center py-6 bg-white rounded-xl shadow-inner border border-emerald-100">
+                        <div class="text-center">
+                            <div class="text-6xl mb-2">🍉</div>
+                            <div class="font-bold text-emerald-900">Semangka</div>
+                            <div class="text-xs bg-red-100 text-red-700 font-bold px-2 py-1 rounded-full mt-1">LEBIH BERAT</div>
+                            <div class="text-xs text-slate-500 mt-1">(Timbangan Turun ke Bawah)</div>
+                        </div>
+
+                        <div class="text-4xl text-emerald-400">⚖️</div>
+
+                        <div class="text-center">
+                            <div class="text-6xl mb-2">🍓</div>
+                            <div class="font-bold text-emerald-900">Stroberi</div>
+                            <div class="text-xs bg-emerald-100 text-emerald-700 font-bold px-2 py-1 rounded-full mt-1">LEBIH RINGAN</div>
+                            <div class="text-xs text-slate-500 mt-1">(Timbangan Naik ke Atas)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kata kunci Berat -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="bg-rose-100 p-4 rounded-2xl border-2 border-rose-300 text-center">
+                        <div class="text-xl font-bold text-rose-900">Lebih Berat</div>
+                        <div class="text-sm text-rose-800">Menekan tangan/timbangan ke bawah</div>
+                    </div>
+                    <div class="bg-teal-100 p-4 rounded-2xl border-2 border-teal-300 text-center">
+                        <div class="text-xl font-bold text-teal-900">Lebih Ringan</div>
+                        <div class="text-sm text-teal-800">Tangan/timbangan terangkat ke atas</div>
+                    </div>
+                    <div class="bg-amber-100 p-4 rounded-2xl border-2 border-amber-300 text-center">
+                        <div class="text-xl font-bold text-amber-900">Sama Berat</div>
+                        <div class="text-sm text-amber-800">Posisi timbangan sejajar seimbang</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-4">
+                    <button onclick="showSection('sec-materi-panjang')" class="btn-bounce bg-slate-200 text-slate-700 px-6 py-3 rounded-full font-bold">
+                        ⬅️ Materi Panjang
+                    </button>
+                    <button onclick="showSection('sec-games')" class="btn-bounce bg-purple-500 text-white px-6 py-3 rounded-full font-bold">
+                        Main Permainan ➡️
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: GAMES INTERAKTIF -->
+        <section id="sec-games" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 border-4 border-purple-400 card-shadow space-y-6">
+                <div class="flex justify-between items-center border-b-2 border-slate-100 pb-4">
+                    <h2 class="text-2xl font-extrabold text-purple-900 flex items-center gap-2">
+                        <span>🎮</span> Permainan Interaktif
+                    </h2>
+                    <span id="game-score-badge" class="bg-purple-100 text-purple-800 px-4 py-1.5 rounded-full font-bold">Skor Game: 0</span>
+                </div>
+
+                <!-- Selector Permainan -->
+                <div class="flex flex-wrap gap-2 justify-center">
+                    <button onclick="loadGame(1)" id="btn-g1" class="px-4 py-2 rounded-xl font-bold text-sm bg-purple-600 text-white shadow">Game 1: Mana Lebih Panjang?</button>
+                    <button onclick="loadGame(2)" id="btn-g2" class="px-4 py-2 rounded-xl font-bold text-sm bg-purple-100 text-purple-700 hover:bg-purple-200">Game 2: Mana Lebih Pendek?</button>
+                    <button onclick="loadGame(3)" id="btn-g3" class="px-4 py-2 rounded-xl font-bold text-sm bg-purple-100 text-purple-700 hover:bg-purple-200">Game 3: Mana Lebih Berat?</button>
+                    <button onclick="loadGame(4)" id="btn-g4" class="px-4 py-2 rounded-xl font-bold text-sm bg-purple-100 text-purple-700 hover:bg-purple-200">Game 4: Mana Lebih Ringan?</button>
+                </div>
+
+                <!-- Area Game Display -->
+                <div id="game-card" class="bg-purple-50 rounded-2xl p-6 border-2 border-purple-200 text-center space-y-6">
+                    <h3 id="game-question" class="text-xl md:text-2xl font-extrabold text-purple-950">
+                        <!-- Pertanyaan Game akan di-render di JS -->
+                    </h3>
+
+                    <div id="game-options" class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-lg mx-auto">
+                        <!-- Pilihan bergambar di-render oleh JS -->
+                    </div>
+
+                    <!-- Feedback Pesan -->
+                    <div id="game-feedback" class="hidden p-4 rounded-xl font-bold text-lg"></div>
+                </div>
+
+                <div class="flex justify-between items-center pt-2">
+                    <button onclick="showSection('sec-menu')" class="btn-bounce bg-slate-200 text-slate-700 px-6 py-3 rounded-full font-bold">
+                        ⬅️ Menu Utama
+                    </button>
+                    <button onclick="showSection('sec-praktik')" class="btn-bounce bg-amber-400 text-amber-950 px-6 py-3 rounded-full font-bold">
+                        Ke Praktik Langsung ➡️
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: PRAKTIK LANGSUNG -->
+        <section id="sec-praktik" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 border-4 border-amber-400 card-shadow space-y-6">
+                <div class="border-b-2 border-slate-100 pb-4">
+                    <h2 class="text-2xl font-extrabold text-amber-900 flex items-center gap-2">
+                        <span>🔍</span> Praktik Langsung di Kelas
+                    </h2>
+                    <p class="text-slate-600">Ayo jadi ilmuwan cilik! Ambil benda-benda di sekitarmu dan lakukan percobaan!</p>
+                </div>
+
+                <!-- Aktivitas 1: Panjang -->
+                <div class="bg-amber-50 p-5 rounded-2xl border-2 border-amber-200 space-y-4">
+                    <h3 class="text-lg font-bold text-amber-900 flex items-center gap-2">
+                        <span>1️⃣</span> Tantangan Panjang: Pensil vs Penggaris
+                    </h3>
+                    <p class="text-sm text-slate-700">Ambil <b>pensil</b> dan <b>penggaris</b> di mejamu, sejajarkan di atas meja!</p>
+                    
+                    <div class="bg-white p-4 rounded-xl border border-amber-200 space-y-3">
+                        <label class="block text-sm font-bold text-slate-700">Hasil Pengamatanmu:</label>
+                        <select id="praktik-panjang-res" class="w-full p-3 rounded-xl border-2 border-amber-300 font-bold bg-amber-50 text-slate-800">
+                            <option value="">-- Pilih Hasil Pengamatan --</option>
+                            <option value="penggaris">Penggaris LEBIH PANJANG dari Pensil</option>
+                            <option value="pensil">Pensil LEBIH PANJANG dari Penggaris</option>
+                            <option value="sama">Keduanya SAMA PANJANG</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Aktivitas 2: Berat -->
+                <div class="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200 space-y-4">
+                    <h3 class="text-lg font-bold text-emerald-900 flex items-center gap-2">
+                        <span>2️⃣</span> Tantangan Berat: Buku vs Tempat Pensil
+                    </h3>
+                    <p class="text-sm text-slate-700">Pegang <b>buku pelajaran</b> di tangan kiri dan <b>tempat pensil</b> di tangan kananmu!</p>
+                    
+                    <div class="bg-white p-4 rounded-xl border border-emerald-200 space-y-3">
+                        <label class="block text-sm font-bold text-slate-700">Mana yang terasa lebih menekan ke bawah?</label>
+                        <select id="praktik-berat-res" class="w-full p-3 rounded-xl border-2 border-emerald-300 font-bold bg-emerald-50 text-slate-800">
+                            <option value="">-- Pilih Hasil Pengamatan --</option>
+                            <option value="buku">Buku LEBIH BERAT dari Tempat Pensil</option>
+                            <option value="tempat_pensil">Tempat Pensil LEBIH BERAT dari Buku</option>
+                            <option value="sama">Keduanya SAMA BERAT</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button onclick="simpanPraktik()" class="btn-bounce bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-lg w-full py-4 rounded-2xl card-shadow border-b-4 border-amber-700">
+                    💾 SIMPAN HASIL PRAKTIK
+                </button>
+
+                <div class="flex justify-between items-center pt-2">
+                    <button onclick="showSection('sec-menu')" class="btn-bounce bg-slate-200 text-slate-700 px-6 py-3 rounded-full font-bold">
+                        ⬅️ Menu Utama
+                    </button>
+                    <button onclick="startEvaluasi()" class="btn-bounce bg-rose-500 text-white px-6 py-3 rounded-full font-bold">
+                        Mulai Evaluasi ➡️
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: EVALUASI / UJIAN -->
+        <section id="sec-evaluasi" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 border-4 border-rose-400 card-shadow space-y-6">
+                <!-- Header Evaluasi -->
+                <div class="flex justify-between items-center border-b-2 border-slate-100 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-rose-900">📝 SOAL EVALUASI</h2>
+                        <span id="eval-progress" class="text-sm font-bold text-rose-600">Soal 1 dari 10</span>
+                    </div>
+                    <button onclick="speakCurrentQuestion()" class="btn-bounce bg-rose-100 text-rose-700 p-3 rounded-full text-xl border border-rose-300">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+
+                <!-- Soal Container -->
+                <div id="eval-question-box" class="space-y-6">
+                    <!-- Text Soal -->
+                    <h3 id="eval-question-text" class="text-xl font-extrabold text-slate-800">
+                        <!-- Content via JS -->
+                    </h3>
+
+                    <!-- Visual Soal -->
+                    <div id="eval-visual-box" class="bg-rose-50 p-6 rounded-2xl border-2 border-rose-100 flex justify-center items-center min-h-[160px]">
+                        <!-- Visual via JS -->
+                    </div>
+
+                    <!-- Pilihan Jawaban -->
+                    <div id="eval-options-container" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <!-- Options via JS -->
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-4 border-t-2 border-slate-100">
+                    <button id="btn-prev-eval" onclick="prevQuestion()" class="btn-bounce bg-slate-200 text-slate-700 px-6 py-3 rounded-full font-bold disabled:opacity-50">
+                        ⬅️ Sebelumnya
+                    </button>
+                    <button id="btn-next-eval" onclick="nextQuestion()" class="btn-bounce bg-rose-500 text-white px-6 py-3 rounded-full font-bold">
+                        Selanjutnya ➡️
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: HASIL BELAJAR & INTEGRASI GOOGLE -->
+        <section id="sec-hasil" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 md:p-8 border-4 border-indigo-400 card-shadow text-center space-y-6">
+                <div class="w-24 h-24 mx-auto bg-indigo-100 rounded-full flex items-center justify-center border-4 border-indigo-300 text-5xl">
+                    🏆
+                </div>
+
+                <h2 class="text-3xl font-extrabold text-indigo-950">HASIL EVALUASI BELAJAR</h2>
+                
+                <div id="result-name" class="text-xl font-bold text-slate-700">Nama Siswa: -</div>
+
+                <!-- Card Skor -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+                    <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200">
+                        <div class="text-xs text-sky-700 font-bold">TOTAL SOAL</div>
+                        <div class="text-3xl font-extrabold text-sky-900">10</div>
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-200">
+                        <div class="text-xs text-emerald-700 font-bold">BENAR</div>
+                        <div id="res-correct" class="text-3xl font-extrabold text-emerald-600">0</div>
+                    </div>
+                    <div class="bg-rose-50 p-4 rounded-2xl border-2 border-rose-200">
+                        <div class="text-xs text-rose-700 font-bold">SALAH</div>
+                        <div id="res-wrong" class="text-3xl font-extrabold text-rose-600">0</div>
+                    </div>
+                    <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-200">
+                        <div class="text-xs text-amber-700 font-bold">NILAI AKHIR</div>
+                        <div id="res-score" class="text-3xl font-extrabold text-amber-600">0</div>
+                    </div>
+                </div>
+
+                <!-- Motivation Message -->
+                <div id="result-motivation" class="p-4 rounded-2xl font-extrabold text-lg">
+                    <!-- Dynamic Motivation -->
+                </div>
+
+                <!-- Tombol Integrasi Google Apps Script -->
+                <div class="bg-slate-50 p-6 rounded-2xl border-2 border-slate-200 space-y-4 max-w-xl mx-auto">
+                    <h3 class="font-extrabold text-slate-800 text-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-indigo-600"></i> Simpan & Cetak Laporan Google
+                    </h3>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-500 text-left">URL Web App Google Apps Script (Opsional):</label>
+                        <input type="text" id="gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full text-xs p-3 rounded-xl border border-slate-300 font-mono bg-white">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button onclick="sendToGoogleSheets()" class="btn-bounce bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow">
+                            <i class="fa-solid fa-file-excel"></i> Simpan ke Spreadsheet
+                        </button>
+                        <button onclick="generateGoogleDoc()" class="btn-bounce bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow">
+                            <i class="fa-solid fa-file-word"></i> Cetak Hasil (Google Docs)
+                        </button>
+                    </div>
+
+                    <div id="gas-status" class="text-xs font-bold text-slate-600 hidden"></div>
+                </div>
+
+                <div class="pt-4 flex justify-center gap-4">
+                    <button onclick="showSection('sec-menu')" class="btn-bounce bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-8 py-3 rounded-full card-shadow">
+                        🔄 Belajar Lagi
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-200 border-t-2 border-slate-300 py-3 text-center text-xs font-bold text-slate-600 mt-6">
+        Media Pembelajaran Interaktif Matematika Kelas 1 SD &copy; 2026 - Membandingkan Panjang & Berat
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // State Manajemen Aplikasi
+        let studentName = "";
+        let gameScore = 0;
+        let currentEvalIndex = 0;
+        let userAnswers = Array(10).fill(null);
+
+        // Bank Soal Evaluasi (10 Soal: 5 Panjang, 5 Berat)
+        const evalQuestions = [
+            // 5 SOAL PANJANG
+            {
+                id: 1,
+                type: 'panjang',
+                question: '1. Manakah benda yang LEBIH PANJANG?',
+                visualHTML: `
+                    <div class="flex flex-col gap-4 w-full max-w-xs">
+                        <div class="bg-amber-300 p-2 rounded-xl flex items-center justify-between font-bold text-amber-900">
+                            <span>A. Penggaris (📏📏📏)</span>
+                        </div>
+                        <div class="bg-emerald-300 p-2 rounded-xl flex items-center justify-between font-bold text-emerald-900 w-2/3">
+                            <span>B. Penghapus (✏️)</span>
+                        </div>
+                    </div>
+                `,
+                options: ['Penggaris', 'Penghapus', 'Sama Panjang'],
+                answer: 0
+            },
+            {
+                id: 2,
+                type: 'panjang',
+                question: '2. Manakah benda yang LEBIH PENDEK?',
+                visualHTML: `
+                    <div class="flex flex-col gap-4 w-full max-w-xs">
+                        <div class="bg-sky-300 p-2 rounded-xl flex items-center justify-between font-bold text-sky-900">
+                            <span>A. Ular (🐍🐍🐍)</span>
+                        </div>
+                        <div class="bg-rose-300 p-2 rounded-xl flex items-center justify-between font-bold text-rose-900 w-1/2">
+                            <span>B. Cacing (🐛)</span>
+                        </div>
+                    </div>
+                `,
+                options: ['Ular', 'Cacing', 'Sama Panjang'],
+                answer: 1
+            },
+            {
+                id: 3,
+                type: 'panjang',
+                question: '3. Pensil A dan Pensil B meletakkannya sejajar dan panjangnya pas sama. Pernyataan yang benar adalah...',
+                visualHTML: `
+                    <div class="flex flex-col gap-3 w-full max-w-xs">
+                        <div class="bg-amber-200 p-2 rounded-xl font-bold text-amber-900 text-center">Pensil A: ✏️✏️</div>
+                        <div class="bg-amber-200 p-2 rounded-xl font-bold text-amber-900 text-center">Pensil B: ✏️✏️</div>
+                    </div>
+                `,
+                options: ['Pensil A lebih panjang', 'Pensil B lebih panjang', 'Pensil A sama panjang dengan Pensil B'],
+                answer: 2
+            },
+            {
+                id: 4,
+                type: 'panjang',
+                question: '4. Saat membandingkan panjang dua benda secara langsung, ujung bawah kedua benda harus diletakkan secara...',
+                visualHTML: `<div class="text-5xl">📐</div>`,
+                options: ['Sejajar / Sama rata', 'Tinggi sebelah', 'Sembarangan'],
+                answer: 0
+            },
+            {
+                id: 5,
+                type: 'panjang',
+                question: '5. Kereta Api vs Sepeda Motor. Kereta api ukurannya ... dibanding Sepeda Motor.',
+                visualHTML: `<div class="text-4xl">🚂 VS 🏍️</div>`,
+                options: ['Lebih Pendek', 'Lebih Panjang', 'Sama Panjang'],
+                answer: 1
+            },
+
+            // 5 SOAL BERAT
+            {
+                id: 6,
+                type: 'berat',
+                question: '6. Manakah buah yang LEBIH BERAT?',
+                visualHTML: `<div class="text-5xl flex gap-6">🍉 <span>VS</span> 🍓</div>`,
+                options: ['Semangka', 'Stroberi', 'Sama Berat'],
+                answer: 0
+            },
+            {
+                id: 7,
+                type: 'berat',
+                question: '7. Manakah benda yang LEBIH RINGAN?',
+                visualHTML: `<div class="text-5xl flex gap-6">🪨 <span>VS</span> 🪶</div>`,
+                options: ['Batu Besar', 'Bulu Ayam', 'Sama Berat'],
+                answer: 1
+            },
+            {
+                id: 8,
+                type: 'berat',
+                question: '8. Pada timbangan sederhana, benda yang LEBIH BERAT posisinya akan...',
+                visualHTML: `<div class="text-5xl">⚖️</div>`,
+                options: ['Turun ke bawah', 'Terangkat ke atas', 'Melayang'],
+                answer: 0
+            },
+            {
+                id: 9,
+                type: 'berat',
+                question: '9. Memegang Buku Tebal di tangan kiri dan Kapas di tangan kanan. Tangan kiri terasa menekan ke bawah. Berarti Buku...',
+                visualHTML: `<div class="text-4xl">📚 VS ☁️</div>`,
+                options: ['Lebih Ringan dari kapas', 'Lebih Berat dari kapas', 'Sama berat dengan kapas'],
+                answer: 1
+            },
+            {
+                id: 10,
+                type: 'berat',
+                question: '10. Jika timbangan berada dalam posisi LURUS SEJAJAR (seimbang), artinya kedua benda tersebut...',
+                visualHTML: `<div class="text-5xl">⚖️ (Seimbang)</div>`,
+                options: ['Lebih Berat', 'Lebih Ringan', 'Sama Berat'],
+                answer: 2
+            }
+        ];
+
+        // Text-to-Speech Helper untuk Anak SD
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Reset
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'id-ID';
+                msg.rate = 0.9; // Agak perlahan agar jelas
+                window.speechSynthesis.speak(msg);
+            }
+        }
+
+        // Jalankan Aplikasi & Mulai Belajar
+        function startLearning() {
+            const inputName = document.getElementById('input-nama').value.trim();
+            if (!inputName) {
+                alert("Halo! Tuliskan namamu terlebih dahulu ya 😊");
+                return;
+            }
+            studentName = inputName;
+            document.getElementById('display-student-name').innerText = studentName;
+            document.getElementById('student-tag').classList.remove('hidden');
+            
+            showSection('sec-menu');
+            speakText(`Selamat datang ${studentName}! Ayo kita belajar membandingkan panjang dan berat benda!`);
+        }
+
+        // Navigasi Section Tampilan
+        function showSection(sectionId) {
+            const sections = ['sec-welcome', 'sec-menu', 'sec-materi-panjang', 'sec-materi-berat', 'sec-games', 'sec-praktik', 'sec-evaluasi', 'sec-hasil'];
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- GAME INTERAKTIF LOGIC ---
+        let currentAGame = 1;
+        const gameData = {
+            1: {
+                title: "Game 1: Mana Benda yang LEBIH PANJANG?",
+                optA: { name: "Penggaris Kayu", icon: "📏📏📏", val: true },
+                optB: { name: "Penghapus", icon: "✏️", val: false }
+            },
+            2: {
+                title: "Game 2: Mana Benda yang LEBIH PENDEK?",
+                optA: { name: "Ular Tangga", icon: "🐍🐍", val: false },
+                optB: { name: "Ulat Cilik", icon: "🐛", val: true }
+            },
+            3: {
+                title: "Game 3: Mana Benda yang LEBIH BERAT?",
+                optA: { name: "Gajah", icon: "🐘", val: true },
+                optB: { name: "Burung", icon: "🐦", val: false }
+            },
+            4: {
+                title: "Game 4: Mana Benda yang LEBIH RINGAN?",
+                optA: { name: "Mobil", icon: "🚗", val: false },
+                optB: { name: "Balon udara", icon: "🎈", val: true }
+            }
+        };
+
+        function loadGame(gameId) {
+            currentAGame = gameId;
+            // Highlight button
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`btn-g${i}`);
+                if (i === gameId) {
+                    btn.className = "px-4 py-2 rounded-xl font-bold text-sm bg-purple-600 text-white shadow";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl font-bold text-sm bg-purple-100 text-purple-700 hover:bg-purple-200";
+                }
+            }
+
+            const data = gameData[gameId];
+            document.getElementById('game-question').innerText = data.title;
+            speakText(data.title);
+
+            const feedback = document.getElementById('game-feedback');
+            feedback.classList.add('hidden');
+
+            const container = document.getElementById('game-options');
+            container.innerHTML = `
+                <button onclick="checkGameAnswer(true, ${data.optA.val})" class="btn-bounce bg-white p-6 rounded-2xl border-4 border-purple-200 hover:border-purple-500 shadow-md flex flex-col items-center">
+                    <span class="text-6xl mb-3">${data.optA.icon}</span>
+                    <span class="font-bold text-lg text-slate-800">${data.optA.name}</span>
+                </button>
+                <button onclick="checkGameAnswer(false, ${data.optB.val})" class="btn-bounce bg-white p-6 rounded-2xl border-4 border-purple-200 hover:border-purple-500 shadow-md flex flex-col items-center">
+                    <span class="text-6xl mb-3">${data.optB.icon}</span>
+                    <span class="font-bold text-lg text-slate-800">${data.optB.name}</span>
+                </button>
+            `;
+        }
+
+        function checkGameAnswer(isOptionA, isCorrect) {
+            const feedback = document.getElementById('game-feedback');
+            feedback.classList.remove('hidden');
+
+            if (isCorrect) {
+                gameScore += 10;
+                document.getElementById('game-score-badge').innerText = `Skor Game: ${gameScore}`;
+                feedback.className = "p-4 rounded-xl font-bold text-lg bg-emerald-100 text-emerald-800 border-2 border-emerald-400";
+                feedback.innerHTML = "🎉 HORE! JAWABANMU BENAR! KAU HEBAT!";
+                speakText("Hore! Jawabanmu benar!");
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+            } else {
+                feedback.className = "p-4 rounded-xl font-bold text-lg bg-rose-100 text-rose-800 border-2 border-rose-400";
+                feedback.innerHTML = "😅 Coba lagi ya! Perhatikan ukurannya baik-baik.";
+                speakText("Ayo coba lagi!");
+            }
+        }
+
+        // --- PRAKTIK LANGSUNG LOGIC ---
+        function simpanPraktik() {
+            const p1 = document.getElementById('praktik-panjang-res').value;
+            const p2 = document.getElementById('praktik-berat-res').value;
+
+            if (!p1 || !p2) {
+                alert("Isi dulu kedua hasil pengamatan praktiknya ya 😊");
+                return;
+            }
+
+            alert("✨ Wah hebat! Hasil pengamatan praktikanmu sudah tersimpan!");
+            confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
+        }
+
+        // --- EVALUASI LOGIC ---
+        function startEvaluasi() {
+            currentEvalIndex = 0;
+            userAnswers = Array(10).fill(null);
+            showSection('sec-evaluasi');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = evalQuestions[currentEvalIndex];
+            document.getElementById('eval-progress').innerText = `Soal ${currentEvalIndex + 1} dari 10`;
+            document.getElementById('eval-question-text').innerText = q.question;
+            document.getElementById('eval-visual-box').innerHTML = q.visualHTML;
+
+            const optContainer = document.getElementById('eval-options-container');
+            optContainer.innerHTML = '';
+
+            q.options.forEach((optText, idx) => {
+                const isSelected = userAnswers[currentEvalIndex] === idx;
+                const btn = document.createElement('button');
+                btn.className = `btn-bounce p-4 rounded-2xl font-bold text-base border-4 text-left transition ${
+                    isSelected 
+                    ? 'bg-rose-500 text-white border-rose-700 shadow-lg' 
+                    : 'bg-white text-slate-800 border-rose-200 hover:border-rose-400'
+                }`;
+                btn.innerText = optText;
+                btn.onclick = () => selectAnswer(idx);
+                optContainer.appendChild(btn);
+            });
+
+            // Update Prev Button state
+            document.getElementById('btn-prev-eval').disabled = (currentEvalIndex === 0);
+            
+            // Text button Next vs Selesai
+            const btnNext = document.getElementById('btn-next-eval');
+            if (currentEvalIndex === evalQuestions.length - 1) {
+                btnNext.innerText = "Selesai 🏁";
+                btnNext.className = "btn-bounce bg-emerald-500 text-white px-6 py-3 rounded-full font-bold";
+            } else {
+                btnNext.innerText = "Selanjutnya ➡️";
+                btnNext.className = "btn-bounce bg-rose-500 text-white px-6 py-3 rounded-full font-bold";
+            }
+        }
+
+        function selectAnswer(optionIndex) {
+            userAnswers[currentEvalIndex] = optionIndex;
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentEvalIndex] === null) {
+                alert("Pilih satu jawaban dulu ya sebelum lanjut 😊");
+                return;
+            }
+
+            if (currentEvalIndex < evalQuestions.length - 1) {
+                currentEvalIndex++;
+                renderQuestion();
+                speakCurrentQuestion();
+            } else {
+                calculateResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentEvalIndex > 0) {
+                currentEvalIndex--;
+                renderQuestion();
+            }
+        }
+
+        function speakCurrentQuestion() {
+            const q = evalQuestions[currentEvalIndex];
+            speakText(q.question);
+        }
+
+        function calculateResults() {
+            let correctCount = 0;
+            evalQuestions.forEach((q, idx) => {
+                if (userAnswers[idx] === q.answer) {
+                    correctCount++;
+                }
+            });
+
+            const wrongCount = 10 - correctCount;
+            const finalScore = correctCount * 10;
+
+            document.getElementById('result-name').innerText = `Nama Siswa: ${studentName}`;
+            document.getElementById('res-correct').innerText = correctCount;
+            document.getElementById('res-wrong').innerText = wrongCount;
+            document.getElementById('res-score').innerText = finalScore;
+
+            const motBox = document.getElementById('result-motivation');
+            if (finalScore >= 80) {
+                motBox.className = "p-4 rounded-2xl font-extrabold text-lg bg-emerald-100 text-emerald-800 border-2 border-emerald-400";
+                motBox.innerText = "🌟 HEBAT SEKALI! Kamu adalah Juara Matematika!";
+                speakText(`Hebat sekali ${studentName}! Nilaimu ${finalScore}. Kamu pintar sekali!`);
+            } else if (finalScore >= 60) {
+                motBox.className = "p-4 rounded-2xl font-extrabold text-lg bg-amber-100 text-amber-800 border-2 border-amber-400";
+                motBox.innerText = "👍 BAGUS! Kamu sudah belajar dengan baik. Tingkatkan lagi ya!";
+                speakText(`Bagus ${studentName}! Nilaimu ${finalScore}. Terus belajar ya!`);
+            } else {
+                motBox.className = "p-4 rounded-2xl font-extrabold text-lg bg-rose-100 text-rose-800 border-2 border-rose-400";
+                motBox.innerText = "💪 JANGAN PATAH SEMANGAT! Ayo ulang materi dan coba lagi!";
+                speakText(`Tetap semangat ${studentName}! Ayo belajar lagi bersama-sama.`);
+            }
+
+            showSection('sec-hasil');
+            confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+        }
+
+        // --- INTEGRASI GOOGLE APPS SCRIPT ---
+        function getPayload() {
+            const correct = parseInt(document.getElementById('res-correct').innerText);
+            const wrong = parseInt(document.getElementById('res-wrong').innerText);
+            const score = parseInt(document.getElementById('res-score').innerText);
+
+            return {
+                nama: studentName,
+                tanggal: new Date().toLocaleDateString('id-ID', { dateStyle: 'full' }),
+                skor: score,
+                benar: correct,
+                salah: wrong
+            };
+        }
+
+        function sendToGoogleSheets() {
+            const url = document.getElementById('gas-url').value.trim();
+            const statusEl = document.getElementById('gas-status');
+            statusEl.classList.remove('hidden');
+
+            if (!url) {
+                statusEl.innerText = "⚠️ Masukkan URL Web App Google Apps Script terlebih dahulu!";
+                statusEl.className = "text-xs font-bold text-amber-600";
+                return;
+            }
+
+            statusEl.innerText = "⏳ Mengirim data ke Google Spreadsheet...";
+            statusEl.className = "text-xs font-bold text-blue-600";
+
+            const payload = getPayload();
+            payload.action = "saveToSheet";
+
+            fetch(url, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                statusEl.innerText = "✅ Data Berhasil Dikirim ke Google Spreadsheet!";
+                statusEl.className = "text-xs font-bold text-emerald-600";
+            })
+            .catch(err => {
+                statusEl.innerText = "❌ Gagal mengirim data: " + err.message;
+                statusEl.className = "text-xs font-bold text-rose-600";
+            });
+        }
+
+        function generateGoogleDoc() {
+            const url = document.getElementById('gas-url').value.trim();
+            const statusEl = document.getElementById('gas-status');
+            statusEl.classList.remove('hidden');
+
+            if (!url) {
+                statusEl.innerText = "⚠️ Masukkan URL Web App Google Apps Script terlebih dahulu!";
+                statusEl.className = "text-xs font-bold text-amber-600";
+                return;
+            }
+
+            statusEl.innerText = "⏳ Membuat Laporan Google Dokumen...";
+            statusEl.className = "text-xs font-bold text-blue-600";
+
+            const payload = getPayload();
+            payload.action = "generateDoc";
+
+            fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" }, // CORS friendly dengan Apps Script
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    statusEl.innerHTML = `✅ Laporan Berhasil Dibuat! <a href="${data.docUrl}" target="_blank" class="underline text-indigo-600 font-bold">Buka Google Dokumen</a>`;
+                    statusEl.className = "text-xs font-bold text-emerald-600";
+                } else {
+                    statusEl.innerText = "❌ Gagal: " + data.message;
+                    statusEl.className = "text-xs font-bold text-rose-600";
+                }
+            })
+            .catch(err => {
+                statusEl.innerText = "❌ Gagal membuat dokumen: " + err.message;
+                statusEl.className = "text-xs font-bold text-rose-600";
+            });
+        }
+
+        // Init default game
+        loadGame(1);
+    </script>
+</body>
+</html>
